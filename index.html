@@ -1,5 +1,5 @@
-
 <!DOCTYPE html>
+<!-- ♿ ACCESIBILIDAD: El atributo lang="es-AR" es crucial para los lectores de pantalla. -->
 <html lang="es-AR">
   <head>
     <meta charset="UTF-8" />
@@ -9,19 +9,24 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- 🎨 MARCA: Puedes cambiar las familias de fuentes (Poppins, Lato) aquí. Asegúrate de actualizar también tailwind.config. -->
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
     <script>
+      // 🎨 MARCA — 🔧 EDITABLE: Este es el centro de la identidad visual de tu aplicación.
+      // 🛠️ CÓMO CAMBIAR: Modifica los códigos de color y las familias de fuentes para que coincidan con tu marca.
       tailwind.config = {
-        darkMode: 'class',
+        darkMode: 'class', // Habilita el modo oscuro basado en una clase en el <html>
         theme: {
           extend: {
             fontFamily: {
+              // Define las fuentes base para el cuerpo y los títulos.
               sans: ['Lato', 'sans-serif'],
               display: ['Poppins', 'sans-serif'],
             },
             colors: {
-              primary: '#F97316',
-              accent: '#0EA5E9',
+              // Define tu paleta de colores.
+              primary: '#F97316', // Color principal (naranja por defecto)
+              accent: '#0EA5E9',  // Color de acento (celeste por defecto)
               light: {
                 bg: '#FFFFFF',
                 text: '#0A0A0A',
@@ -37,6 +42,62 @@
         }
       }
     </script>
+    <style>
+      /* 🎨 MARCA: Variables CSS para estilos que no son de Tailwind, como los botones segmentados. */
+      :root {
+          --accent: #0EA5E9;
+          --muted: #e5e7eb; /* gray-200 */
+      }
+      .dark {
+          --muted: #374151; /* gray-700 */
+      }
+      
+      /* ♿ ACCESIBILIDAD: Transiciones suaves que respetan las preferencias de movimiento reducido del usuario. */
+      html { transition: font-size 180ms ease-in-out, color 160ms ease, background-color 160ms ease; }
+      body, .bg-light-card, .dark .bg-dark-card, button { transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease; }
+      @media (prefers-reduced-motion: reduce){
+        html, body, .bg-light-card, .dark .bg-dark-card, button { transition: none !important; }
+      }
+
+      /* Botonera segmentada (radiogrupo visual) */
+      .segmented {
+        display: inline-flex; align-items: center; gap: 0;
+        border: 1px solid var(--muted); border-radius: 999px;
+        overflow: hidden;
+      }
+      .segmented [role="radio"] {
+        padding: .45rem .75rem; cursor: pointer; user-select: none;
+        border: 0; background: transparent; font: inherit; color: inherit;
+      }
+      .segmented [role="radio"]:not(:last-child) { border-right: 1px solid var(--muted); }
+      .segmented [aria-checked="true"] {
+        background: color-mix(in srgb, var(--accent) 16%, transparent);
+        font-weight: 600;
+      }
+      .segmented [role="radio"]:focus-visible {
+        outline: 3px solid var(--accent); outline-offset: -3px;
+        z-index: 1;
+      }
+
+      /* Modal de configuración */
+      dialog.config {
+        width: min(680px, calc(100% - 32px));
+        border-radius: 14px; padding: 1.25rem 1.5rem;
+        border: 1px solid var(--muted);
+      }
+      dialog.config::backdrop { background: rgb(0 0 0 / .35); }
+
+      /* Filas apiladas */
+      .config-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 1rem; padding-block: 1rem; border-bottom: 1px solid var(--muted); }
+      .config-row:last-of-type { border-bottom: none; }
+      .config-row-header { flex-grow: 1; }
+      .config-row-header h3 { margin: 0; font-size: 1.05rem; text-align: left; font-weight: bold; }
+      .config-row-header p  { margin: 0.25rem 0 0; opacity: .8; font-size: .95rem; text-align: left; }
+
+      /* Controles del pie del modal */
+      .config-actions { display:flex; gap:10px; justify-content:flex-end; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--muted); }
+
+    </style>
   <script type="importmap">
 {
   "imports": {
@@ -48,6 +109,7 @@
 }
 </script>
 </head>
+  <!-- 🗂️ ESTRUCTURA: El `body` y el div `#root` son la base del layout. Las clases de Tailwind controlan el tema claro/oscuro. -->
   <body class="bg-light-bg text-light-text dark:bg-dark-bg dark:text-dark-text">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>

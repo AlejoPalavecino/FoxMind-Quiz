@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { getLeaderboard, saveScore, resetLeaderboard } from '../../services/leaderboardService';
 import { type LeaderboardEntry } from '../../types';
@@ -40,6 +39,7 @@ const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onClose, ne
   if (!isOpen) return null;
 
   return (
+    // ♿ ACCESIBILIDAD: Modal implementado con roles ARIA para ser accesible.
     <div
       className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
       onClick={onClose}
@@ -52,12 +52,14 @@ const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onClose, ne
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">
+          {/* 🧮 CONTENIDO — 🔧 EDITABLE: Cambia el título del modal. */}
           <h2 id="leaderboard-title" className="font-display text-3xl font-bold text-primary">Leaderboard</h2>
           <Button onClick={onClose} variant="secondary" size="sm" aria-label="Cerrar modal">X</Button>
         </div>
         
         {newScore && (
           <form onSubmit={handleSave} className="mb-6 p-4 bg-white dark:bg-slate-700 rounded-lg">
+            {/* 🧮 CONTENIDO — 🔧 EDITABLE: Cambia el texto del formulario para guardar puntaje. */}
             <h3 className="font-bold text-lg mb-2">¡Gran puntaje! Guárdalo:</h3>
             <div className="flex gap-2">
               <input
@@ -76,26 +78,28 @@ const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onClose, ne
         
         <div className="overflow-y-auto flex-grow">
           {leaderboard.length > 0 ? (
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b-2 border-gray-300 dark:border-gray-600">
-                  <th className="p-2 font-display">#</th>
-                  <th className="p-2 font-display">Nick</th>
-                  <th className="p-2 font-display">Puntaje</th>
-                  <th className="p-2 font-display">Tiempo</th>
-                </tr>
-              </thead>
-              <tbody>
-                {leaderboard.map((entry, index) => (
-                  <tr key={index} className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-slate-700">
-                    <td className="p-2 font-bold">{index + 1}</td>
-                    <td className="p-2">{entry.nick}</td>
-                    <td className="p-2">{entry.score}</td>
-                    <td className="p-2">{entry.timeSeconds}s</td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left min-w-[400px]">
+                <thead>
+                  <tr className="border-b-2 border-gray-300 dark:border-gray-600">
+                    <th className="p-2 font-display">#</th>
+                    <th className="p-2 font-display">Nick</th>
+                    <th className="p-2 font-display">Puntaje</th>
+                    <th className="p-2 font-display">Tiempo</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {leaderboard.map((entry, index) => (
+                    <tr key={index} className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-slate-700">
+                      <td className="p-2 font-bold">{index + 1}</td>
+                      <td className="p-2">{entry.nick}</td>
+                      <td className="p-2">{entry.score}</td>
+                      <td className="p-2">{entry.timeSeconds}s</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           ) : (
             <p className="text-center p-8 text-gray-500">El leaderboard está vacío. ¡Juega para ser el primero!</p>
           )}

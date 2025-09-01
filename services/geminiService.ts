@@ -1,10 +1,10 @@
-
 import { GoogleGenAI } from "@google/genai";
 import { type Area } from "../types";
 
-// IMPORTANT: This relies on an environment variable `process.env.API_KEY` being set.
-// In a Vite/Create React App setup, this would be `import.meta.env.VITE_API_KEY` or `process.env.REACT_APP_API_KEY`.
-// For this environment, we assume `process.env.API_KEY` is directly available.
+// 🔐 SEGURIDAD: La clave de API NUNCA debe estar hardcodeada en el código fuente.
+// Se debe configurar como una variable de entorno en tu plataforma de despliegue.
+// Para desarrollo local, puedes crear un archivo .env y usar una herramienta como Vite o Create React App
+// que la cargue automáticamente en `process.env.API_KEY` (o similar, ej: `import.meta.env.VITE_API_KEY`).
 const apiKey = process.env.API_KEY;
 
 if (!apiKey) {
@@ -22,6 +22,8 @@ export interface PerformanceData {
   sessionResults: { area: Area; isCorrect: boolean }[];
 }
 
+// 🧮 CONTENIDO — 🔧 EDITABLE: Este es el texto que se mostrará si la llamada a la API de Gemini falla.
+// Puedes personalizarlo para que se ajuste al tono de tu aplicación.
 const FALLBACK_FEEDBACK = `
 ¡Buen trabajo completando el desafío!
 
@@ -36,11 +38,19 @@ const FALLBACK_FEEDBACK = `
 ¡Sigue así!
 `;
 
+/**
+ * Genera feedback personalizado para el usuario basado en su desempeño en el quiz.
+ * @param data - Un objeto con los datos de rendimiento del usuario.
+ * @returns Una cadena de texto con el feedback.
+ */
 export async function getGeminiFeedback(data: PerformanceData): Promise<string> {
     if (!apiKey) {
         return Promise.resolve(FALLBACK_FEEDBACK);
     }
 
+    // 🔧 EDITABLE: Este es el prompt que se envía a la API de Gemini.
+    // 🛠️ CÓMO CAMBIAR: Puedes ajustar el tono, la longitud (ej. 100-120 palabras),
+    // el idioma, o las instrucciones para que el feedback se adapte mejor a tu público.
     const prompt = `
 Eres un coach educativo. Redacta un feedback en español (entre 120 y 150 palabras), claro y motivador. El tono debe ser amable y profesional, sin regaños.
 
@@ -63,9 +73,13 @@ Instrucciones:
 
   try {
     const response = await ai.models.generateContent({
+      // 🔧 EDITABLE: Puedes cambiar el modelo de Gemini por otro que se ajuste a tus necesidades.
+      // Por ejemplo, 'gemini-1.5-pro-latest' si necesitas más capacidad de razonamiento.
       model: 'gemini-2.5-flash',
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      contents: prompt,
       config: {
+        // 🔧 EDITABLE: Ajusta la 'temperatura' para controlar la creatividad de la respuesta.
+        // Un valor más bajo (ej. 0.3) la hace más predecible; un valor más alto (ej. 0.9) la hace más creativa.
         temperature: 0.7,
         topP: 0.95,
       }

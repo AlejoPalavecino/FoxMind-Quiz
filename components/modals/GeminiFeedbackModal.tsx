@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Button from '../ui/Button';
 import { getGeminiFeedback, PerformanceData } from '../../services/geminiService';
@@ -53,9 +52,12 @@ const GeminiFeedbackModal: React.FC<GeminiFeedbackModalProps> = ({ isOpen, onClo
           <Button onClick={onClose} variant="secondary" size="sm" aria-label="Cerrar modal">X</Button>
         </div>
         <div className="overflow-y-auto flex-grow prose dark:prose-invert max-w-none">
+          {/* 🧮 CONTENIDO — 🔧 EDITABLE: Cambia el mensaje que se muestra mientras se genera el feedback. */}
           {isLoading && <p>Generando feedback con Gemini... 🧠</p>}
           {error && <p className="text-red-500">{error}</p>}
           {feedback && (
+              // 🔐 SEGURIDAD: `dangerouslySetInnerHTML` se usa aquí porque Gemini puede devolver formato Markdown simple (negritas, saltos de línea).
+              // El feedback se genera en un entorno controlado. Si el prompt fuera editable por el usuario, se necesitaría sanitización.
               <div dangerouslySetInnerHTML={{ __html: feedback.replace(/\n/g, '<br />') }} />
           )}
         </div>
