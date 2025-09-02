@@ -16,8 +16,13 @@ const Home: React.FC<HomeProps> = ({ onStartQuiz }) => {
 
   const handleReset = () => {
     if (window.confirm('¿Estás seguro de que quieres borrar todo el leaderboard? Esta acción no se puede deshacer.')) {
+      // FIX: Se ha refactorizado la lógica para ser más robusta.
+      // 1. Primero, se borran los datos del localStorage.
       resetLeaderboard();
-      setLeaderboard([]);
+      // 2. Después, se vuelve a leer desde el localStorage (que ahora estará vacío)
+      //    para asegurar que el estado de React se actualice con la fuente de verdad.
+      const freshLeaderboard = getLeaderboard();
+      setLeaderboard(freshLeaderboard);
     }
   };
 

@@ -62,12 +62,16 @@ export const saveScore = (nick: string, score: number, timeSeconds: number): voi
 };
 
 /**
- * Elimina todas las entradas del leaderboard.
+ * Elimina todas las entradas del leaderboard y devuelve un array vacío.
+ * @returns {LeaderboardEntry[]} Un array vacío para actualizar el estado de la UI.
  */
-export const resetLeaderboard = (): void => {
+export const resetLeaderboard = (): LeaderboardEntry[] => {
     try {
-        localStorage.removeItem(LEADERBOARD_KEY);
+        // Limpia explícitamente el almacenamiento para mayor fiabilidad.
+        localStorage.setItem(LEADERBOARD_KEY, '[]');
+        return [];
     } catch (error) {
         console.error("Failed to reset leaderboard in localStorage", error);
+        return [];
     }
 };

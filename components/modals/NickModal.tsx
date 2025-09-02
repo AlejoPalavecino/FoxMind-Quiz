@@ -48,13 +48,17 @@ const NickModal: React.FC<NickModalProps> = ({ isOpen, onClose, onStart }) => {
       ref={dialogRef}
       onClose={onClose}
       className="config bg-light-card dark:bg-dark-card text-light-text dark:text-dark-text p-0"
+      // FIX: Se añade un estilo en línea para anular el ancho de la clase 'config', 
+      // asegurando que el modal tenga un tamaño adecuado para su contenido y se vea centrado.
+      style={{ width: 'min(420px, 90vw)' }}
       aria-labelledby="nick-title"
       aria-describedby="nick-desc"
     >
       <form
         method="dialog"
         onSubmit={handleSubmit}
-        className="p-6 flex flex-col gap-4 w-full max-w-sm"
+        // FIX: Se elimina 'max-w-sm' para que el formulario ocupe todo el ancho del diálogo redimensionado.
+        className="p-6 flex flex-col gap-4 w-full"
       >
         <header>
           {/* 🧮 CONTENIDO — 🔧 EDITABLE: Textos del modal para pedir el nombre de usuario. */}

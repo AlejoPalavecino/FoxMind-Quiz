@@ -1,14 +1,17 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { getGeminiFeedback, PerformanceData } from '../../services/geminiService';
 import { type QuizResult, Area } from '../../types';
-import { FEEDBACK_AUTO_DURATION_MS, TOTAL_QUESTIONS } from '../../constants';
+import { TOTAL_QUESTIONS } from '../../constants';
+import Button from '../ui/Button';
 
 interface FeedbackProps {
   result: QuizResult;
-  onTimeout: () => void;
+  onBackToSummary: () => void;
+  onPlayAgain: () => void;
+  onGoHome: () => void;
 }
 
-const Feedback: React.FC<FeedbackProps> = ({ result, onTimeout }) => {
+const Feedback: React.FC<FeedbackProps> = ({ result, onBackToSummary, onPlayAgain, onGoHome }) => {
   const [feedback, setFeedback] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -51,11 +54,6 @@ const Feedback: React.FC<FeedbackProps> = ({ result, onTimeout }) => {
 
 
   useEffect(() => {
-    // ⏱️ TIEMPO: Inicia el temporizador para pasar automáticamente al resumen.
-    const timer = setTimeout(() => {
-      onTimeout();
-    }, FEEDBACK_AUTO_DURATION_MS);
-
     const fetchFeedback = async () => {
       try {
         const generatedFeedback = await getGeminiFeedback(performanceData);
@@ -69,9 +67,7 @@ const Feedback: React.FC<FeedbackProps> = ({ result, onTimeout }) => {
     };
     
     fetchFeedback();
-
-    return () => clearTimeout(timer);
-  }, [performanceData, onTimeout]);
+  }, [performanceData]);
 
   return (
     <div className="flex-grow flex flex-col justify-center items-center">
@@ -87,8 +83,10 @@ const Feedback: React.FC<FeedbackProps> = ({ result, onTimeout }) => {
             <div dangerouslySetInnerHTML={{ __html: feedback.replace(/\n/g, '<br />') }} />
           )}
         </div>
-        <div className="mt-6 text-sm text-gray-500 dark:text-gray-400 animate-pulse">
-            Avanzando al resumen en {FEEDBACK_AUTO_DURATION_MS / 1000} segundos...
+        <div className="mt-8 flex flex-col sm:flex-row justify-center items-center gap-4">
+            <Button onClick={onBackToSummary} variant="primary" size="lg">Volver al resumen</Button>
+            <Button onClick={onPlayAgain} variant="secondary">Volver a jugar</Button>
+            <Button onClick={onGoHome} variant="secondary">Regresar al inicio</Button>
         </div>
       </section>
     </div>

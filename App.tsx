@@ -8,6 +8,8 @@ import { type QuizResult } from './types';
 import Header from './components/ui/Header';
 import AccessibilityProvider from './contexts/AccessibilityContext';
 import ConfigModal from './components/modals/ConfigModal';
+import { saveScore } from './services/leaderboardService';
+import { pushRecentIds } from './services/questionService';
 
 // 🗂️ ESTRUCTURA: Define las vistas principales de la aplicación.
 type View = 'home' | 'quiz' | 'feedback' | 'summary';
@@ -31,11 +33,26 @@ const App: React.FC = () => {
 
   const handleQuizEnd = useCallback((result: QuizResult) => {
     setQuizResult(result);
+    if (playerNick) {
+      const totalCorrect = result.sessionResults.filter(r => r.isCorrect).length;
+      saveScore(playerNick, totalCorrect, result.totalTimeSeconds);
+      const questionIds = result.sessionResults.map(r => r.question.id);
+      pushRecentIds(questionIds);
+    }
+    setView('summary');
+  }, [playerNick]);
+
+  const handleGoToFeedback = useCallback(() => {
     setView('feedback');
   }, []);
-
-  const handleFeedbackTimeout = useCallback(() => {
+  
+  const handleBackToSummary = useCallback(() => {
     setView('summary');
+  }, []);
+
+  const handlePlayAgain = useCallback(() => {
+    setQuizResult(null);
+    setView('quiz');
   }, []);
 
   const goToHome = useCallback(() => {
@@ -50,9 +67,23 @@ const App: React.FC = () => {
       case 'quiz':
         return <Quiz onQuizEnd={handleQuizEnd} />;
       case 'feedback':
-        return quizResult ? <Feedback result={quizResult} onTimeout={handleFeedbackTimeout} /> : <Home onStartQuiz={handlePlayClick} />;
+        return quizResult ? (
+          <Feedback
+            result={quizResult}
+            onBackToSummary={handleBackToSummary}
+            onPlayAgain={handlePlayAgain}
+            onGoHome={goToHome}
+          />
+        ) : <Home onStartQuiz={handlePlayClick} />;
       case 'summary':
-        return quizResult && playerNick ? <Summary result={quizResult} playerNick={playerNick} onGoHome={goToHome} /> : <Home onStartQuiz={handlePlayClick} />;
+        return quizResult && playerNick ? (
+          <Summary
+            result={quizResult}
+            playerNick={playerNick}
+            onGoHome={goToHome}
+            onGoToFeedback={handleGoToFeedback}
+          />
+        ) : <Home onStartQuiz={handlePlayClick} />;
       case 'home':
       default:
         return <Home onStartQuiz={handlePlayClick} />;

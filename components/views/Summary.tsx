@@ -1,13 +1,12 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { type QuizResult, Area } from '../../types';
-import { saveScore } from '../../services/leaderboardService';
-import { pushRecentIds } from '../../services/questionService';
-import { SUMMARY_AUTO_DURATION_MS } from '../../constants';
+import Button from '../ui/Button';
 
 interface SummaryProps {
   result: QuizResult;
   playerNick: string;
   onGoHome: () => void;
+  onGoToFeedback: () => void;
 }
 
 // 🧮 CONTENIDO — 🔧 EDITABLE: Cambia los emojis o íconos para cada área temática.
@@ -18,7 +17,7 @@ const areaIcons: { [key in Area]: string } = {
   [Area.CsSociales]: '🏛️',
 };
 
-const Summary: React.FC<SummaryProps> = ({ result, playerNick, onGoHome }) => {
+const Summary: React.FC<SummaryProps> = ({ result, playerNick, onGoHome, onGoToFeedback }) => {
   const { totalCorrect, byArea } = useMemo(() => {
     const totalCorrect = result.sessionResults.filter(r => r.isCorrect).length;
     
@@ -40,24 +39,6 @@ const Summary: React.FC<SummaryProps> = ({ result, playerNick, onGoHome }) => {
     
     return { totalCorrect, byArea };
   }, [result.sessionResults]);
-
-  useEffect(() => {
-    // UX: Guarda los IDs de las preguntas de esta sesión para evitar repetirlas pronto.
-    const questionIds = result.sessionResults.map(r => r.question.id);
-    pushRecentIds(questionIds);
-    
-    // Guardado automático en el leaderboard
-    if (playerNick) {
-      saveScore(playerNick, totalCorrect, result.totalTimeSeconds);
-    }
-
-    // ⏱️ TIEMPO: Vuelve al inicio automáticamente después de un tiempo.
-    const timer = setTimeout(() => {
-      onGoHome();
-    }, SUMMARY_AUTO_DURATION_MS);
-    
-    return () => clearTimeout(timer);
-  }, [result, playerNick, onGoHome, totalCorrect]);
 
   return (
     <div className="flex-grow flex flex-col justify-center">
@@ -91,9 +72,10 @@ const Summary: React.FC<SummaryProps> = ({ result, playerNick, onGoHome }) => {
           })}
         </div>
         
-        <p className="text-sm text-gray-500 dark:text-gray-400 animate-pulse">
-            Volviendo al inicio en {SUMMARY_AUTO_DURATION_MS / 1000} segundos...
-        </p>
+        <div className="mt-8 flex flex-col sm:flex-row justify-center items-center gap-4">
+          <Button onClick={onGoToFeedback} variant="accent" size="lg">Ver feedback</Button>
+          <Button onClick={onGoHome} variant="secondary">Volver al inicio</Button>
+        </div>
       </div>
     </div>
   );
